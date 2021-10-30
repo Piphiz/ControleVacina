@@ -31,7 +31,7 @@ class CreateRegisterTable extends Migration
             $table
                 ->foreign('vaccine_id')
                 ->references('id')
-                ->on('vaccine_register')
+                ->on('vaccines')
                 ->onDelete('RESTRICT')
                 ->onUpdate('RESTRICT');
         });
