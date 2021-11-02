@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaccineController;
@@ -17,23 +18,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::post('/login', [Controller::class, 'login']);
 
 Route::get('/user', [UserController::class, 'index']);
-Route::post('/user/create', [UserController::class, 'store']);
 Route::get('/user/{id}', [UserController::class, 'show']);
-Route::patch('/user/{id}', [UserController::class, 'update']);
-Route::delete('/user/{id}', [UserController::class, 'destroy']);
 
 Route::get('/vaccine', [VaccineController::class, 'index']);
-Route::post('/vaccine/create', [VaccineController::class, 'store']);
 Route::get('/vaccine/{id}', [VaccineController::class, 'show']);
-Route::patch('/vaccine/{id}', [VaccineController::class, 'update']);
-Route::delete('/vaccine/{id}', [VaccineController::class, 'destroy']);
 
 Route::get('/register', [RegisterController::class, 'index']);
-Route::post('/register/create', [RegisterController::class, 'register']);
-Route::get('/register/{id}', [RegisterController::class, 'show']);
-Route::delete('/register/{id}', [RegisterController::class, 'destroy']);
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/logout', [Controller::class, 'logout']);
+
+    Route::post('/user/create', [UserController::class, 'store']);
+    Route::patch('/user/{id}', [UserController::class, 'update']);
+    Route::delete('/user/{id}', [UserController::class, 'destroy']);
+
+    Route::post('/vaccine/create', [VaccineController::class, 'store']);
+    Route::patch('/vaccine/{id}', [VaccineController::class, 'update']);
+    Route::delete('/vaccine/{id}', [VaccineController::class, 'destroy']);
+
+    Route::post('/register/create', [RegisterController::class, 'register']);
+    Route::get('/register/{id}', [RegisterController::class, 'show']);
+    Route::delete('/register/{id}', [RegisterController::class, 'destroy']);
+
+});
+
