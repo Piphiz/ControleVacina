@@ -10,7 +10,7 @@ class Register extends Model
     use HasFactory;
 
     protected $fillable = [
-        'userd_id',
+        'user_id',
         'vaccine_id',
         'dose_number',
         'next_dose',
