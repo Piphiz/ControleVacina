@@ -16,10 +16,10 @@ class VaccineFactory extends Factory
     {
         return [
             'manufacturer' => $this->faker->name(),
-            'lot' => Str::random(14),
+            'lot' => strtoupper(Str::random(10)),
             'expiration_date' =>  $this->faker->dateTimeBetween('+1 years','+5 years'),
-            'doses' => '2',
-            'interval_doses' => '60',
+            'doses' => rand(1,3),
+            'interval_doses' => $this->faker->randomElement($array = array ('30', '60', '90')),
         ];
     }
 }

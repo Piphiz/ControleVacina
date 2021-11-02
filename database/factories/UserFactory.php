@@ -17,8 +17,9 @@ class UserFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
-            'cpf' => Str::random(14),
-            'phone' => $this->faker->tollFreePhoneNumber(),
+            'cpf' => $this->faker->unique()->cpf(),
+            'RG' => $this->faker->unique()->rg(),
+            'phone' => $this->faker->cellphoneNumber(),
             'address' =>$this->faker->address(),
             'birth_date' => $this->faker->dateTimeBetween('-60 years','-30 years'),
         ];
