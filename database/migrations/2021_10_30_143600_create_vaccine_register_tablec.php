@@ -19,7 +19,7 @@ class CreateVaccineRegisterTablec extends Migration
             $table->string('lot');
             $table->string('doses');
             $table->string('interval_doses');
-            $table->timestamp('expiration_date');
+            $table->string('expiration_date');
             $table->timestamps();
             $table->softDeletes();
         });
