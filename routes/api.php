@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaccineController;
 use Illuminate\Http\Request;
@@ -31,3 +32,8 @@ Route::post('/vaccine/create', [VaccineController::class, 'store']);
 Route::get('/vaccine/{id}', [VaccineController::class, 'show']);
 Route::patch('/vaccine/{id}', [VaccineController::class, 'update']);
 Route::delete('/vaccine/{id}', [VaccineController::class, 'destroy']);
+
+Route::get('/register', [RegisterController::class, 'index']);
+Route::post('/register/create', [RegisterController::class, 'register']);
+Route::get('/register/{id}', [RegisterController::class, 'show']);
+Route::delete('/register/{id}', [RegisterController::class, 'destroy']);
