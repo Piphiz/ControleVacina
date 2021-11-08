@@ -25,5 +25,7 @@ class User extends Authenticatable
 
     protected $hidden = [];
 
-    protected $casts = [];
+    protected $casts = [
+        'birth_date' => 'datetime'
+    ];
 }
