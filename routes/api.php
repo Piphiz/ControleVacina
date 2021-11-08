@@ -31,15 +31,15 @@ Route::get('/register', [RegisterController::class, 'index']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [Controller::class, 'logout']);
 
-    Route::post('/user/create', [UserController::class, 'store']);
+    Route::post('/user', [UserController::class, 'store']);
     Route::patch('/user/{id}', [UserController::class, 'update']);
     Route::delete('/user/{id}', [UserController::class, 'destroy']);
 
-    Route::post('/vaccine/create', [VaccineController::class, 'store']);
+    Route::post('/vaccine', [VaccineController::class, 'store']);
     Route::patch('/vaccine/{id}', [VaccineController::class, 'update']);
     Route::delete('/vaccine/{id}', [VaccineController::class, 'destroy']);
 
-    Route::post('/register/create', [RegisterController::class, 'register']);
+    Route::post('/register', [RegisterController::class, 'register']);
     Route::get('/register/{id}', [RegisterController::class, 'show']);
     Route::delete('/register/{id}', [RegisterController::class, 'destroy']);
 
