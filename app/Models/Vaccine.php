@@ -20,5 +20,7 @@ class Vaccine extends Model
 
     protected $hidden = [];
 
-    protected $casts = [];
+    protected $casts = [
+        'expiration_date' => 'datetime'
+    ];
 }

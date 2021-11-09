@@ -2,57 +2,61 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateVaccineRequest;
+use App\Http\Requests\VaccineRequest;
 use App\Models\Vaccine;
+use App\Services\VaccineService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class VaccineController extends Controller
 {
-    public function __construct(Vaccine $vaccine)
+    protected $vaccine;
+    protected $vaccineService;
+
+    public function __construct(Vaccine $vaccine, VaccineService $vaccineService)
     {
         $this->vaccine = $vaccine;
+        $this->vaccineService = $vaccineService;
     }
 
     public function index()
     {
-        $vaccine = $this->vaccine->all();
+        $vaccine = $this->vaccine->paginate(10);
 
-        return response()->json(['data' => $vaccine], 200);
+        return response()->json($vaccine, 200);
     }
 
-    public function store(Request $request)
+    public function store(VaccineRequest $request)
     {
         try {
-            $data = $request->only(['manufacturer', 'lot', 'doses', 'interval_doses', 'expiration_date']);
+            $this->vaccineService->checkList();
 
-            $data['expiration_date'] = Carbon::parse($data['expiration_date']);
+            $data = $request->all();
             $this->vaccine->create($data);
-            return response()->json([],201);
+            return response()->json(
+                ['message' => 'Usuario criado com sucesso'],
+                201
+            );
         } catch (\Exception $e) {
-            return response()->json([],422);
+            return response()->json(
+                ['Error' => $e->getMessage()],
+                $e->getCode()
+            );
         }
     }
 
     public function show(Vaccine $vaccine, $id)
     {
-        try {
-            $vaccine = $this->vaccine->findOrFail($id);
-            return response()->json(['data' => $vaccine], 200);
-        } catch (\Exception $e) {
-            return response()->json([],404);
-        }
+        $vaccine = $this->vaccine->findOrFail($id);
+        return response()->json($vaccine, 200);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateVaccineRequest $request, $id)
     {
+        $vaccine = $this->vaccine->findOrFail($id);
         try {
-            $data = $request->only(['manufacturer', 'lot', 'doses', 'interval_doses', 'expiration_date']);
-
-            if($request->has('expiration_date')){
-                $data['expiration_date'] = Carbon::parse($data['expiration_date']);
-            }
-
-            $vaccine = $this->vaccine->find($id);
+            $data = $request->all();
             $vaccine->update($data);
             return response()->json([],200);
         } catch (\Exception $e) {
@@ -62,12 +66,8 @@ class VaccineController extends Controller
 
     public function destroy($id)
     {
-        try {
-            $this->vaccine->findOrFail($id);
-            $this->vaccine->destroy($id);
-            return response()->json([],200);
-        } catch (\Exception $e) {
-            return response()->json([],404);
-        }
+        $vaccine = $this->vaccine->findOrFail($id);
+        $vaccine->destroy();
+        return response()->json(['message' => 'Usuario deletado com sucesso'],204);
     }
 }
