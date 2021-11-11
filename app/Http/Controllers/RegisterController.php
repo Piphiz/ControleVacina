@@ -2,75 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterRequest;
 use App\Models\Register;
 use App\Models\User;
 use App\Models\Vaccine;
+use App\Services\RegisterService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
-    public function __construct(Register $register, Vaccine $vaccine)
+    protected $register;
+    protected $vaccine;
+    protected $registerService;
+
+    public function __construct(Register $register, Vaccine $vaccine, RegisterService $registerService)
     {
         $this->register = $register;
         $this->vaccine = $vaccine;
+        $this->registerService = $registerService;
     }
 
     public function index()
     {
-        $register = $this->register->all();
+        $register = $this->register->paginate(10); //with
 
-        return response()->json(['data' => $register], 200);
+        return response()->json($register, 200);
     }
 
-    public function register(Request $request)
+    public function register()
     {
         try {
-            $data = $request->only(['user_id', 'vaccine_id']);
-            $vaccine = $this->vaccine->where('id', '=', $data['vaccine_id'])->first();
-
-            if ($this->register->where('user_id', '=', $data['user_id'])->first() === null) {
-                $data['next_dose'] = Carbon::now()->add($vaccine['interval_doses'], 'day');
-                $data['dose_number'] = 1;
-                $this->register->create($data);
-
-            } else {
-                $register = $this->register->where('user_id', '=', $data['user_id'])->latest('created_at')->first();
-                $vaccineOld = $this->vaccine->where('id', '=', $register['vaccine_id'])->first();
-                
-                if($vaccineOld['manufacturer'] === $vaccine['manufacturer'] && $register['dose_number'] < $vaccine['doses'] && Carbon::now()->gt($register['next_dose'])){
-                    $data['next_dose'] = Carbon::now()->add(($this->vaccine->where('id', '=', $data['vaccine_id'])->first())['interval_doses'], 'day');
-                    $data['dose_number'] = 1 + $register['dose_number'];
-                    $this->register->create($data);
-                    return response()->json([],201);
-                } else {
-                    return response()->json(["Regras nao foram cumpridas"],404);
-                }
-            }
-            return response()->json([],201);
+            $data = $this->registerService->createARegister();
+            $this->register->create($data);
+            return response()->json(['message' => 'Registro criado com sucesso'],201);
         } catch (\Exception $e) {
-            return response()->json([$e],422);
+            return response()->json(['Error' => $e->getMessage()],$e->getCode());
         }
     }
 
     public function show(Register $register, $id)
     {
-        try {
-            $register = $this->register->findOrFail($id);
-            return response()->json(['data' => $register], 200);
-        } catch (\Exception $e) {
-            return response()->json([],404);
-        }
+        $register = $this->register->findOrFail($id);
+        return response()->json($register, 200);
     }
 
     public function destroy($id)
     {
-        try {
-            $this->register->findOrFail($id);
-            $this->register->destroy($id);
-            return response()->json([],200);
-        } catch (\Exception $e) {
-            return response()->json([],404);
-        }
+        $register = $this->register->findOrFail($id);
+        $register->destroy($id);
+        return response()->json(
+            ['message' => 'Usuario deletado com sucesso'],
+            204
+        );
     }
 }
